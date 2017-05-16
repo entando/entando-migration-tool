@@ -42,24 +42,7 @@ public class PooledConnection {
         ds.setMaxIdle(10);
         ds.setMaxOpenPreparedStatements(100);
 
-        connection = ds.getConnection();
-        PreparedStatement pstmt = connection.prepareStatement("SELECT code from PAGES");
-
-        System.out.println("The Connection Object is of Class: "+connection.getClass());
-        try (ResultSet resultSet = pstmt.executeQuery();)
-        {
-            while (resultSet.next())
-            {
-                System.out.println(resultSet.getString(1));
-            }
-        }
-        catch (Exception e)
-        {
-            connection.rollback();
-            e.printStackTrace();
-        }
-
-        return connection;
+        return ds.getConnection();
     }
 
 

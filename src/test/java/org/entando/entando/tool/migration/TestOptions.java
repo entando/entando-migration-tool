@@ -27,7 +27,7 @@ public class TestOptions implements ITestConnectionParams {
 
 
     public final static String args[] = {
-        Options.ARG_SRC_URL + "=" + URL_SRC_POSTGRES
+        Options.ARG_SRC_URL + "=" + URL_SRC_POSTGRES // src=jdbc:postgresql://127.0.0.1:5432/ent-4.2Port
     };
 
 }

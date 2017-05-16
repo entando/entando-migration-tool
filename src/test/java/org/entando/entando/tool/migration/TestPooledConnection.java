@@ -6,8 +6,13 @@
 package org.entando.entando.tool.migration;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import junit.framework.Assert;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import org.junit.Test;
@@ -36,7 +41,8 @@ public class TestPooledConnection implements ITestConnectionParams {
     @Test
     public void TestConnectionPool() throws Throwable {
         try {
-            Connection connection = PooledConnection.getDataSource(PooledConnection.SUPPORTED_DBMS.POSTGRES,
+            Connection connection = PooledConnection.getDataSource(
+                    PooledConnection.SUPPORTED_DBMS.POSTGRES,
                     USERNAME,
                     PASSWORD,
                     URL_SRC_POSTGRES);
@@ -67,6 +73,40 @@ public class TestPooledConnection implements ITestConnectionParams {
         }
 
         assertTrue(exceptionInvoked);
+    }
+
+
+    @Test
+    public void testQuery() throws Throwable {
+        List<String> pages = new ArrayList<String>();
+
+        try {
+            Connection connection = PooledConnection.getDataSource(
+                    PooledConnection.SUPPORTED_DBMS.POSTGRES,
+                    USERNAME,
+                    PASSWORD,
+                    URL_SRC_POSTGRES);
+            PreparedStatement pstmt = connection.prepareStatement("SELECT code from PAGES");
+
+            System.out.println("The Connection Object is of Class: "+connection.getClass());
+            ResultSet resultSet = pstmt.executeQuery();
+            {
+                while (resultSet.next())
+                {
+                    String pageCode = resultSet.getString(1);
+
+                    pages.add(pageCode);
+//                    System.out.println(">page id> " + pageCode);
+                }
+            }
+
+            assertNotNull(pages);
+            assertFalse(pages.isEmpty());
+            assertTrue(pages.size() > 1);
+
+        } catch (Throwable t) {
+            throw t;
+        }
     }
 
 
