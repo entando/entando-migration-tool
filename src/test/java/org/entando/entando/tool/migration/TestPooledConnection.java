@@ -77,7 +77,7 @@ public class TestPooledConnection implements ITestConnectionParams {
 
 
     @Test
-    public void testQuery() throws Throwable {
+    public void testQueryPostgres() throws Throwable {
         List<String> pages = new ArrayList<String>();
 
         try {

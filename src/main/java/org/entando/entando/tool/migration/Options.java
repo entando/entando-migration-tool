@@ -48,6 +48,7 @@ public class Options {
         if  (StringUtils.isBlank(opt)) {
             return;
         }
+
         tok = opt.split(ARG_SEPARATOR);
 
         // process SRC
