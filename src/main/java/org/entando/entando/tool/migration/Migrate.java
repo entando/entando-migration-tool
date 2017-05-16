@@ -32,7 +32,12 @@ public class Migrate {
     public static void main(String[] argv)
     {
         // parse command line options
-        Options.loadParams(argv);
+        try {
+            Options.loadParams(argv);
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
 
     }
 

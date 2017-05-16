@@ -26,13 +26,17 @@ public class Options {
         return _instance;
     }
 
-    public static void loadParams(String[] argv)
+    public static void loadParams(String[] argv) throws Throwable
     {
         // FIXME use java 8 lambda?
         for (String arg: argv)
         {
             parseParameter(arg);
         }
+        // process default
+        processDefaults();
+
+        // TODO make sure that needed parameters exists
     }
 
     // FIXME add support for single item command line aruments (those with no '=')
@@ -48,9 +52,21 @@ public class Options {
 
         // process SRC
         if (opt.startsWith(ARG_SRC_URL)) {
-            instance.src = tok[1];
+            instance._src = tok[1];
         }
 
+    }
+
+    /**
+     * Assign defaults values for unspecified parameters
+     */
+    private static void processDefaults()
+    {
+        Options instance = Options.getInstance();
+
+        if (null == instance._minIdle) {
+            instance._minIdle = SystemConstants.DEFAULT_MIN_IDLE;
+        }
     }
 
 
@@ -62,12 +78,24 @@ public class Options {
     {
         Options instance = Options.getInstance();
 
-        return instance.src;
+        return instance._src;
+    }
+
+    /**
+     * Return the MIN number of idle connections
+     * @return
+     */
+    public static Integer getMinIdle()
+    {
+        Options instance = Options.getInstance();
+
+        return instance._minIdle;
     }
 
     private static Options _instance;
 
-    private String src;
+    private String _src;
+    private Integer _minIdle;
 
 
     public final static String ARG_SEPARATOR = "=";

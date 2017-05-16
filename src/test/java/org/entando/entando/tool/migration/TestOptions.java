@@ -16,7 +16,7 @@ import org.junit.Test;
 public class TestOptions implements ITestConnectionParams {
 
     @Test
-    public void TestDriverName() {
+    public void testDriverName() {
         Migrate.main(args);
 
         String src = Options.getSrcUrl();
@@ -26,8 +26,17 @@ public class TestOptions implements ITestConnectionParams {
     }
 
 
+    @Test
+    public void testDefaultsOptions() {
+        Migrate.main(args);
+
+        Integer minIdle = Options.getMinIdle();
+
+        assertEquals(SystemConstants.DEFAULT_MIN_IDLE, minIdle);
+    }
+
     public final static String args[] = {
-        Options.ARG_SRC_URL + "=" + URL_SRC_POSTGRES // src=jdbc:postgresql://127.0.0.1:5432/ent-4.2Port
+        Options.ARG_SRC_URL + "=" + URL_SRC_POSTGRES
     };
 
 }

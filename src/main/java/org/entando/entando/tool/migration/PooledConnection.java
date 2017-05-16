@@ -38,7 +38,7 @@ public class PooledConnection {
         ds.setPassword(password);
         ds.setDriverClassName(dbms.getDriverName());
 
-        ds.setMinIdle(5);
+        ds.setMinIdle(Options.getMinIdle());
         ds.setMaxIdle(10);
         ds.setMaxOpenPreparedStatements(100);
 
