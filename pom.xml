@@ -3,11 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.entando.entando.tool</groupId>
     <artifactId>entando-db-migration-tool</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
 
 <build>
+	<finalName>entando-db-migration-tool</finalName>
     <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -17,7 +18,35 @@
                 <argLine>-Dtest=AddNumbers -Dnum1=100</argLine>
             </configuration>
         </plugin>
+		<plugin>
+        <!-- NOTE: We don't need a groupId specification because the group is
+             org.apache.maven.plugins ...which is assumed by default.
+         -->
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+		  <archive>
+            <manifest>
+              <mainClass>org.entando.entando.tool.migration.Migrate</mainClass>
+            </manifest>
+          </archive>
+		</configuration>
+		 <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+		</plugin>
+
     </plugins>
+
 </build>
 
 <dependencies>
@@ -32,16 +61,23 @@
     <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-dbcp2</artifactId>
-        <version>2.1.1</version>
+        <version>${version.commons-dbcp2}</version>
     </dependency>
-
     <!-- Postgres -->
     <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.4.1212</version>
+        <version>${artifactid.postgresql.version}</version>
+      <type>jar</type>
     </dependency>
-
+    <!-- Mysql -->
+<!--    
+    <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${artifactid.mysql.version}</version>
+    </dependency>
+-->
 <!-- Oracle -->
  <!-- ojdbc6.jar example -->
     <!--
@@ -67,12 +103,16 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
+    
     </dependencies>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <artifactid.postgresql.version>42.1.1</artifactid.postgresql.version>
+        <artifactid.mysql.version>5.1.39</artifactid.mysql.version>
+        <version.commons-dbcp2>2.1.1</version.commons-dbcp2>
     </properties>
-
+    <description>entando-db-migration-tool</description>
 </project>

@@ -15,22 +15,27 @@ package org.entando.entando.tool.migration;
 
 /**
  *
- * @author matteo
+ * @author Federico Locci <f.locci@entando.com>
  */
-public interface ITestConnectionParams {
+public class DatabaseDriver {
 
-    final static String USERNAME = "agile";
-    final static String PASSWORD = "agile";
+    public enum SUPPORTED_DBMS {
+        MYSQL(DRV_MYSQL),
+        POSTGRESQL(DRV_POSTGRES);
 
-    final static String URL_SRC_POSTGRES = "127.0.0.1:5432/ent-4.2Port";
-    final static String URL_DST_POSTGRES = "127.0.0.1:5432/ent-4.3Port";
-    final static String JDBC_DRIVER_POSTGRES = "postgresql";
+        private String name;
 
-    final static String URL_SRC_MYSQL = "127.0.0.1:3306/ent4-2Port";
-    final static String URL_DST_MYSQL = "127.0.0.1:3306/ent4-3Port";
-    final static String JDBC_DRIVER_MYSQL = "mysql";
+        SUPPORTED_DBMS(String name) {
+            this.name = name;
+        }
 
-    final static boolean JBDC_DRIVER_POSTGRES_ENABLE = true;
-    final static boolean JBDC_DRIVER_MYSQL_ENABLE = false;
+        public String getDriverName() {
+            return name;
+        }
+
+    };
+
+    private final static String DRV_POSTGRES = "org.postgresql.Driver";
+    private final static String DRV_MYSQL = "com.mysql.jdbc.Driver";
 
 }

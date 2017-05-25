@@ -1,94 +1,63 @@
 /*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
-*/
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.tool.migration;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.DriverManager;
-import java.sql.Statement;
-
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.dbcp2.BasicDataSource;
-
-
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
- * @author Entando
+ * @author Federico Locci <f.locci@entando.com>
  */
 public class Migrate {
 
+    private final List<ISQLMigration> migrate;
 
-    public static void main(String[] argv)
-    {
-        // parse command line options
-        try {
-            Options.loadParams(argv);
-
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-
+    Migrate() {
+        this.migrate = new ArrayList();
     }
 
-
-    /*
-    private static BasicDataSource getDataSource()
-    {
-
-        if (dataSource == null)
-        {
-            BasicDataSource ds = new BasicDataSource();
-            ds.setUrl("jdbc:postgresql://127.0.0.1:5432/ent-4.2Port");
-            ds.setUsername("agile");
-            ds.setPassword("agile");
-            ds.setDriverClassName("org.postgresql.Driver");
-
-            ds.setMinIdle(5);
-            ds.setMaxIdle(10);
-            ds.setMaxOpenPreparedStatements(100);
-
-            dataSource = ds;
-
-            // test
-
-            try
-            {
-                Connection connection = ds.getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("SELECT code from PAGES");
-
-                System.out.println("The Connection Object is of Class: "+connection.getClass());
-                try (ResultSet resultSet = pstmt.executeQuery();)
-                {
-                    while (resultSet.next())
-                    {
-                        System.out.println(resultSet.getString(1));
-                    }
-                }
-                catch (Exception e)
-                {
-                    connection.rollback();
-                    e.printStackTrace();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-
-        }
-        return dataSource;
+    public void addMigration(final ISQLMigration sqlMigration) {
+        migrate.add(sqlMigration);
     }
-    */
 
-    private static BasicDataSource dataSource;
+    public void run() {
+        migrate.forEach(action -> {
+            action.execute();
+        });
+    }
 
+    public static void main(String[] args) {
+        System.out.println("Starting migration");
+        Options.loadParams(args);
+        Migrate migrate = new Migrate();
+
+        final DatabaseDriver.SUPPORTED_DBMS driver = Options.getJdbcDriver().equals("postgresql")
+                ? DatabaseDriver.SUPPORTED_DBMS.POSTGRESQL : DatabaseDriver.SUPPORTED_DBMS.MYSQL;
+
+        final PooledConnection sourceDatabasePort = PooledConnectionFactory.getConnection(driver, Options.getSrcUrl(), Options.getUsername(), Options.getPassword());
+
+        final String urlSourceDatabaseEnv = Options.getSrcUrl().substring(0, Options.getSrcUrl().lastIndexOf("Port")).concat("Serv");
+        final PooledConnection sourceDatabaseEnv = PooledConnectionFactory.getConnection(driver, urlSourceDatabaseEnv, Options.getUsername(), Options.getPassword());
+
+        final PooledConnection destinationDatabase = PooledConnectionFactory.getConnection(driver, Options.getDstUrl(), Options.getUsername(), Options.getPassword());
+
+        migrate.addMigration(new SQLMigrationPagesLastUpdate(sourceDatabasePort, sourceDatabaseEnv, destinationDatabase));
+        migrate.run();
+
+        System.out.println("done.");
+        System.exit(0);
+
+    }
 }

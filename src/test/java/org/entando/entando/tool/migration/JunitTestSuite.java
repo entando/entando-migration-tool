@@ -13,24 +13,22 @@
  */
 package org.entando.entando.tool.migration;
 
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
 /**
  *
- * @author matteo
+ * @author Federico Locci <f.locci@entando.com>
  */
-public interface ITestConnectionParams {
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    TestOptions.class,
+    TestPooledConnection.class,
+    TestPooledConnectionFactory.class,
+    TestDatabaseDriver.class,
+    TestSQLMigrationPagesLastUpdate.class
 
-    final static String USERNAME = "agile";
-    final static String PASSWORD = "agile";
-
-    final static String URL_SRC_POSTGRES = "127.0.0.1:5432/ent-4.2Port";
-    final static String URL_DST_POSTGRES = "127.0.0.1:5432/ent-4.3Port";
-    final static String JDBC_DRIVER_POSTGRES = "postgresql";
-
-    final static String URL_SRC_MYSQL = "127.0.0.1:3306/ent4-2Port";
-    final static String URL_DST_MYSQL = "127.0.0.1:3306/ent4-3Port";
-    final static String JDBC_DRIVER_MYSQL = "mysql";
-
-    final static boolean JBDC_DRIVER_POSTGRES_ENABLE = true;
-    final static boolean JBDC_DRIVER_MYSQL_ENABLE = false;
+})
+public class JunitTestSuite {
 
 }

@@ -13,24 +13,23 @@
  */
 package org.entando.entando.tool.migration;
 
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+
 /**
  *
- * @author matteo
+ * @author Federico Locci <f.locci@entando.com>
  */
-public interface ITestConnectionParams {
+public class TestRunner {
 
-    final static String USERNAME = "agile";
-    final static String PASSWORD = "agile";
+    public static void main(String[] args) {
+        Result result = JUnitCore.runClasses(JunitTestSuite.class);
 
-    final static String URL_SRC_POSTGRES = "127.0.0.1:5432/ent-4.2Port";
-    final static String URL_DST_POSTGRES = "127.0.0.1:5432/ent-4.3Port";
-    final static String JDBC_DRIVER_POSTGRES = "postgresql";
+        for (Failure failure : result.getFailures()) {
+            System.out.println(failure.toString());
+        }
 
-    final static String URL_SRC_MYSQL = "127.0.0.1:3306/ent4-2Port";
-    final static String URL_DST_MYSQL = "127.0.0.1:3306/ent4-3Port";
-    final static String JDBC_DRIVER_MYSQL = "mysql";
-
-    final static boolean JBDC_DRIVER_POSTGRES_ENABLE = true;
-    final static boolean JBDC_DRIVER_MYSQL_ENABLE = false;
-
+        System.out.println(result.wasSuccessful());
+    }
 }

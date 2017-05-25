@@ -1,68 +1,71 @@
 /*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
-*/
+ * Copyright 2015-Present Entando Inc. (http://www.entando.com) All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
 package org.entando.entando.tool.migration;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  *
- * @author Entando
+ * @author Federico Locci <f.locci@entando.com>
  */
 public class PooledConnection {
 
-    public static Connection getDataSource(
-            SUPPORTED_DBMS dbms,
-            String username,
-            String password,
-            String url) throws Throwable
-    {
-        BasicDataSource ds = new BasicDataSource();
-        Connection connection = null;
+    private final BasicDataSource datasource;
 
-        if (StringUtils.isBlank(username)
-                || StringUtils.isBlank(password)
-                || StringUtils.isBlank(url))
-        {
-            return connection;
-        }
+    protected PooledConnection(
+            final DatabaseDriver.SUPPORTED_DBMS driver,
+            final String url,
+            final String username,
+            final String password) {
 
-        ds.setUrl(url);
-        ds.setUsername(username);
-        ds.setPassword(password);
-        ds.setDriverClassName(dbms.getDriverName());
-
-        ds.setMinIdle(Options.getMinIdle());
-        ds.setMaxIdle(10);
-        ds.setMaxOpenPreparedStatements(100);
-
-        return ds.getConnection();
+        //jdbc:postgresql://127.0.0.1:5432/ent-4.2Port
+        final String jdbcString = new StringBuilder("jdbc:").append(driver).append("://").append(url).toString();
+        //System.out.println(">>jdbc: " + jdbcString.replace(jdbcString.split(":")[1], jdbcString.split(":")[1].toLowerCase()));
+        //System.out.println(">>DriverName: " + driver.getDriverName());
+        BasicDataSource basicDataSource = new BasicDataSource();
+        basicDataSource.setUrl(jdbcString.replace(jdbcString.split(":")[1], jdbcString.split(":")[1].toLowerCase()));
+        basicDataSource.setUsername(username);
+        basicDataSource.setPassword(password);
+        basicDataSource.setDriverClassName(driver.getDriverName());
+        Options.getInstance();
+        basicDataSource.setMinIdle(Options.getMinIdle());
+        basicDataSource.setMaxIdle(Options.getMaxIdle());
+        basicDataSource.setMaxOpenPreparedStatements(Options.getMaxPreparedStatement());
+        this.datasource = basicDataSource;
+        //System.out.println("Connection done.");
     }
 
+    public Connection getConnection() throws SQLException {
+        return datasource.getConnection();
+    }
 
+    public String getDriverName() {
+        return this.datasource.getDriverClassName();
+    }
 
-    public enum SUPPORTED_DBMS {
-        MYSQL(DRV_MYSQL),
-        POSTGRES(DRV_POSTGRES);
-
-        private String name;
-
-        SUPPORTED_DBMS(String name) {
-            this.name = name;
+    public void close() {
+        try {
+            if (null != datasource) {
+                datasource.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PooledConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
 
-        public String getDriverName() {
-            return name;
-        }
-
-    };
-
-    private final static String DRV_POSTGRES = "org.postgresql.Driver";
-    private final static String DRV_MYSQL = "com.mysql.jdbc.Driver";
 }
