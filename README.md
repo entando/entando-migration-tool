@@ -29,7 +29,8 @@ Usage is rather simple:
  
 ### Example
 
-java -jar entando-db-migration-tool-jar-with-dependencies.jar --src=http://127.0.0.1:5432/ent-4.2Port --user=agile --password=agile --dst=http://127.0.0.1:5432/ent-4.3Port --jbdc=postgres 
+java -jar entando-db-migration-tool-jar-with-dependencies.jar --src=http://127.0.0.1:5432/ent-4.2Port  
+--user=agile --password=agile --dst=http://127.0.0.1:5432/ent-4.3Port --jbdc=postgres 
 
 where:
 
