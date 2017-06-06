@@ -12,7 +12,7 @@ Usage is rather simple:
  $ java -jar ./entando-db-migration-tool-jar-with-dependencies.jar --src=<source_db_addr> --user=<username> --password=<password> --dst=<dest_db_addr> --jbdc=[postgres|mysql]
  ```
  
- ### Options
+### Options
  
  The following are available:
  
@@ -31,12 +31,19 @@ Usage is rather simple:
 
 java -jar entando-db-migration-tool-jar-with-dependencies.jar --src=http://127.0.0.1:5432/ent-4.2Port --user=agile --password=agile --dst=http://127.0.0.1:5432/ent-4.3Port --jbdc=postgres 
 
+where:
+
+ * Entando 4.2 source db is **ent-4.2Port** available at the http://127.0.0.1:5432/ent-4.2Port
+ * destination db of the Entando 4.3 is **ent-4.3Port** at http://127.0.0.1:5432/ent-4.3Port
+ * DBMS is Postgres
+
 ## Current limitations
 
 The following software presents the following limitations:
 
 * migrates DB from Entando 4.2 -> Entando 4.3 (no version selection switch available)
-* source db and destination db must have the same login credentials
+* source db and destination db must share the same RDBMS
+* source db and destination db must share the same login credentials
 
 ## License
 
