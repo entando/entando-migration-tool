@@ -15,9 +15,8 @@ package org.entando.entando.tool.migration;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,47 +24,53 @@ import org.apache.commons.dbcp2.BasicDataSource;
  */
 public class PooledConnection {
 
-    private final BasicDataSource datasource;
+	private final BasicDataSource datasource;
 
-    protected PooledConnection(
-            final DatabaseDriver.SUPPORTED_DBMS driver,
-            final String url,
-            final String username,
-            final String password) {
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(SQLMigrationPagesLastUpdate.class);
 
-        //jdbc:postgresql://127.0.0.1:5432/ent-4.2Port
-        final String jdbcString = new StringBuilder("jdbc:").append(driver).append("://").append(url).toString();
-        //System.out.println(">>jdbc: " + jdbcString.replace(jdbcString.split(":")[1], jdbcString.split(":")[1].toLowerCase()));
-        //System.out.println(">>DriverName: " + driver.getDriverName());
-        BasicDataSource basicDataSource = new BasicDataSource();
-        basicDataSource.setUrl(jdbcString.replace(jdbcString.split(":")[1], jdbcString.split(":")[1].toLowerCase()));
-        basicDataSource.setUsername(username);
-        basicDataSource.setPassword(password);
-        basicDataSource.setDriverClassName(driver.getDriverName());
-        Options.getInstance();
-        basicDataSource.setMinIdle(Options.getMinIdle());
-        basicDataSource.setMaxIdle(Options.getMaxIdle());
-        basicDataSource.setMaxOpenPreparedStatements(Options.getMaxPreparedStatement());
-        this.datasource = basicDataSource;
-        //System.out.println("Connection done.");
-    }
+	protected PooledConnection(
+			final DatabaseDriver.SUPPORTED_DBMS driver,
+			final String url,
+			final String username,
+			final String password) {
 
-    public Connection getConnection() throws SQLException {
-        return datasource.getConnection();
-    }
+		//jdbc:postgresql://127.0.0.1:5432/ent-4.2Port
+		final String jdbcString = new StringBuilder("jdbc:").append(driver).append("://").append(url).toString();
+		//System.out.println(">>jdbc: " + jdbcString.replace(jdbcString.split(":")[1], jdbcString.split(":")[1].toLowerCase()));
+		//System.out.println(">>DriverName: " + driver.getDriverName());
+		BasicDataSource basicDataSource = new BasicDataSource();
+		basicDataSource.setUrl(jdbcString.replace(jdbcString.split(":")[1], jdbcString.split(":")[1].toLowerCase()));
+		basicDataSource.setUsername(username);
+		basicDataSource.setPassword(password);
+		basicDataSource.setDriverClassName(driver.getDriverName());
+		Options.getInstance();
+		basicDataSource.setMinIdle(Options.getMinIdle());
+		basicDataSource.setMaxIdle(Options.getMaxIdle());
+		basicDataSource.setMaxOpenPreparedStatements(Options.getMaxPreparedStatement());
+		this.datasource = basicDataSource;
+		//System.out.println("Connection done.");
+	}
 
-    public String getDriverName() {
-        return this.datasource.getDriverClassName();
-    }
+	public Connection getConnection() throws SQLException {
+		if (null != datasource) {
+			return datasource.getConnection();
+		}
 
-    public void close() {
-        try {
-            if (null != datasource) {
-                datasource.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(PooledConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+		return null;
+	}
+
+	public String getDriverName() {
+		return this.datasource.getDriverClassName();
+	}
+
+	public void close() {
+		try {
+			if (null != datasource) {
+				datasource.close();
+			}
+		} catch (SQLException ex) {
+			LOGGER.error(ex.getMessage());
+		}
+	}
 
 }
