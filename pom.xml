@@ -110,7 +110,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <artifactid.postgresql.version>42.1.1</artifactid.postgresql.version>
+        <artifactid.postgresql.version>42.4.1</artifactid.postgresql.version>
         <artifactid.mysql.version>5.1.39</artifactid.mysql.version>
         <version.commons-dbcp2>2.1.1</version.commons-dbcp2>
     </properties>
